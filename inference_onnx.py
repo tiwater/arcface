@@ -9,7 +9,7 @@ import os
 
 model = ort.InferenceSession('./model/arcface.onnx')
 
-img = Image.open('./faces/src.jpeg')
+img = Image.open('./dataset/testImg/0204.jpg')
 img = img.resize((112, 112))
 img = img.convert('RGB')
 img = np.array(img).astype(np.float32)/255.0
@@ -19,11 +19,11 @@ img = img.transpose((2, 0, 1))[np.newaxis, ...]
 output_src = model.run(None, {'data': img})[0][0]
 
 # Directory containing target images
-target_dir = './faces/targets'
+target_dir = './dataset/testImg'
 
 # Iterate over all .jpg files in the target directory
 for filename in os.listdir(target_dir):
-    if filename.endswith('.jpeg'):
+    if filename.endswith('.jpg'):
         # Preprocess each target image
         img_target = Image.open(os.path.join(target_dir, filename))
         img_target = img_target.resize((112, 112))
