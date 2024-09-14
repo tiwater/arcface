@@ -6,11 +6,13 @@ def build_rknn_model(onnx_model_path, quantize=True):
     print('--> Config model')
     rknn.config(mean_values=[[127.5, 127.5, 127.5]], std_values=[[127.5, 127.5, 127.5]],
                 quant_img_RGB2BGR=False,
+#                reorder_channel='0 1 2', # For RGB, '2 1 0' for BGR
+                optimization_level=3,
                 quantized_algorithm='normal', target_platform='rk3588')
     print('done')
 
     print('--> Loading model')
-    ret = rknn.load_onnx(model=onnx_model_path, inputs=['images'], input_size_list=[[1,3,640,640]])
+    ret = rknn.load_onnx(model=onnx_model_path, inputs=['input'], input_size_list=[[1,3,112,112]])
     if ret != 0:
         print('Load ONNX model failed!')
         return ret

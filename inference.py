@@ -1,43 +1,50 @@
 # arcFace.py
-import onnxruntime as ort
+
+from rknnlite.api import RKNNLite
 from PIL import Image
 import numpy as np
 import os
 
-providers = ['CPUExecutionProvider']
-model = ort.InferenceSession('./model/arcface_int8.onnx', providers=providers)
-# model = ort.InferenceSession('./model/arcface.onnx')
+# Initialize RKNN model
+rknn = RKNNLite()
+rknn.load_rknn('./model/arcface.rknn')
+rknn.init_runtime()
 
-img = Image.open('./dataset/testImg/0204.jpg')
-img = img.resize((112, 112))
-img = img.convert('RGB')
-img = np.array(img).astype(np.float32)/255.0
-img = (img * 2) - 1
-img = img.transpose((2, 0, 1))[np.newaxis, ...]
+# Preprocess the source image
+img_src = Image.open('./dataset/testImg/0204.jpg')
+img_src = img_src.resize((112, 112))
+img_src = img_src.convert('RGB')
 
-output_src = model.run(None, {'input': img})[0][0]
+img_src = np.array(img_src).astype(np.float32)
+img_src = img_src.transpose((2, 0, 1))[np.newaxis, ...]
+
+# Get inference for the source image
+output_src = rknn.inference(inputs=[img_src], data_format='nchw')[0][0]
 
 # Directory containing target images
 target_dir = './dataset/testImg'
 
 # Iterate over all .jpg files in the target directory
 for filename in os.listdir(target_dir):
+    
     if filename.endswith('.jpg'):
         # Preprocess each target image
         img_target = Image.open(os.path.join(target_dir, filename))
         img_target = img_target.resize((112, 112))
         img_target = img_target.convert('RGB')
-        img_target = np.array(img_target).astype(np.float32) / 255.0
-        img_target = (img_target * 2) - 1
+        
+        img_target = np.array(img_target).astype(np.float32)
         img_target = img_target.transpose((2, 0, 1))[np.newaxis, ...]
 
         # Get inference for the target image
-        output_target = model.run(None, {'input': img_target})[0][0]
+        output_target = rknn.inference(inputs=[img_target],
+                                       # Format of the input data
+                                       data_format='nchw')[0][0]
 
         # Calculate the cosine similarity
         cos_sim = np.dot(output_src, output_target) / (np.linalg.norm(output_src) * np.linalg.norm(output_target))
 
-        # Calculate the L2 distance (Mean Squared Error)
+        # # Calculate the L2 distance (Mean Squared Error)
         mse_dist = np.linalg.norm(output_src - output_target)
 
         # Print the results

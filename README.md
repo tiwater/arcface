@@ -34,6 +34,11 @@ A face recognition model
    ```bash
    python inference_onnx.py
    ```
+   或者
+   ```bash
+   python inference.py
+   ```
+   利用 rknn 模型推理
 
 ## 模型转换
 
@@ -55,13 +60,13 @@ A face recognition model
    ```
    生成 ONNX 文件 `arcface.onnx`。
 
-6. 如果需要继续生成 rknn 模型，请参考以下步骤。但目前生成的 arface rknn 模型在 rk3588 上无法得到有意义的结果，不确定是否因为精度不足。
+6. 如果需要继续生成 rknn 模型，请参考以下步骤。
    
 7. 参考 [RKNN-Toolkit2 快速入门指南](https://hub.nuaa.cf/airockchip/rknn-toolkit2/blob/master/doc/01_Rockchip_RV1106_RV1103_Quick_Start_RKNN_SDK_V2.0.0beta0_CN.pdf)，在 PC 端用 Docker 安装 RKNN-Toolkit2 镜像。
 
 8. 启动镜像后，在镜像中执行以下步骤：
 
-9.  利用 `docker cp` 将本项目源码拷贝进容器中。
+9. 利用 `docker cp` 将本项目源码拷贝进容器中。
 
 10. 准备量化样本。本例中使用从 [faces_ms1m_112x112.zip](https://s3.amazonaws.com/onnx-model-zoo/arcface/dataset/faces_ms1m_112x112.zip) 下载的人脸图片集，并解压缩至 dataset 目录。
     
@@ -94,6 +99,7 @@ A face recognition model
 ## 关于参数
 
 输入需归一化到 [−1, 1]：mean_values=[[127.5, 127.5, 127.5]], std_values=[[127.5, 127.5, 127.5]]
+这个值会被写入生成的模型，在推理时会被自动应用。即推理时无需手动归一化，直接输入原始值即可。
 
 ## 参考
 
