@@ -40,6 +40,7 @@ A face recognition model
    python inference.py
    ```
    利用 rknn 模型推理
+   
    cosine 距离 > 0.5 或 mse < 1 可以认为是同一个人
 
 ## 模型转换
