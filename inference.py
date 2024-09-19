@@ -16,10 +16,10 @@ img_src = img_src.resize((112, 112))
 img_src = img_src.convert('RGB')
 
 img_src = np.array(img_src).astype(np.float32)
-img_src = img_src.transpose((2, 0, 1))[np.newaxis, ...]
+img_src = img_src[np.newaxis, ...]
 
 # Get inference for the source image
-output_src = rknn.inference(inputs=[img_src], data_format='nchw')[0][0]
+output_src = rknn.inference(inputs=[img_src], data_format='nhwc')[0][0]
 
 # Directory containing target images
 target_dir = './dataset/testImg'
@@ -34,12 +34,12 @@ for filename in os.listdir(target_dir):
         img_target = img_target.convert('RGB')
         
         img_target = np.array(img_target).astype(np.float32)
-        img_target = img_target.transpose((2, 0, 1))[np.newaxis, ...]
+        img_target = img_target[np.newaxis, ...]
 
         # Get inference for the target image
         output_target = rknn.inference(inputs=[img_target],
                                        # Format of the input data
-                                       data_format='nchw')[0][0]
+                                       data_format='nhwc')[0][0]
 
         # Calculate the cosine similarity
         cos_sim = np.dot(output_src, output_target) / (np.linalg.norm(output_src) * np.linalg.norm(output_target))
